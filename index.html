@@ -24,6 +24,7 @@
   color-scheme:light;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{scroll-behavior:smooth;scroll-padding-top:120px}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.75;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
@@ -509,8 +510,7 @@ function apply(p){
   while(ol.children.length>n) ol.lastChild.remove();
   for(let i=ol.children.length;i<n;i++){const li=document.createElement("li");li.innerHTML=`<div>${p.steps[i]}</div>`;ol.appendChild(li)}
   sb.hidden=n===0;
-  sbtn.querySelector("span").textContent= n===0?`逐步講解（${p.steps.length} 步）`: n<p.steps.length?`下一步（${n}/${p.steps.length}）`:"講解完畢";
-  sbtn.disabled=n>=p.steps.length;
+  sbtn.querySelector("span").textContent= n===0?`逐步講解（${p.steps.length} 步）`: n<p.steps.length?`下一步（${n}/${p.steps.length}）`:"收起講解";
   const gb=document.getElementById(p.id+"-grade"); gb.hidden=!(s.show||n>0);
   gb.querySelectorAll(".g").forEach(b=>b.setAttribute("aria-pressed",String(s.grade!=null&&+b.dataset.g===s.grade)));
 }
@@ -544,7 +544,7 @@ exam.addEventListener("click",e=>{
   const p=byId[b.dataset.id], s=st(p.id), a=b.dataset.act;
   if(a==="hint") s.hint=!s.hint;
   if(a==="show") s.show=!s.show;
-  if(a==="step") s.step=Math.min((s.step||0)+1,p.steps.length);
+  if(a==="step") s.step=(s.step||0)>=p.steps.length?0:(s.step||0)+1;
   if(a==="grade"){const g=+b.dataset.g; s.grade= s.grade===g?null:g; if(s.grade==null) delete s.grade;}
   apply(p); tally(); save();
 });

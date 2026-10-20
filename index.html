@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>有機化學模擬考</title>
+<meta name="description" content="依原考卷題型重新出題的有機化學互動模擬考：命名、R/S、構形分析、SN1/SN2/E1/E2，附提示、答案與分步講解。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&family=JetBrains+Mono:wght@400;600&family=Caveat:wght@600&display=swap">
+<style>
+/* Layout: an exam sheet in three "pages" like the original; the teacher's red pen marks answers,
+   a highlighter marks hints, a sticky bar holds the score and question chips. */
+:root{
+  --bg:#e6ebf0; --paper:#fdfdfb; --ink:#1a2430; --muted:#5c6976; --line:#d2d9e0; --rule:#e9edf1;
+  --accent:#2747a3; --accent-soft:#e2e8f7;
+  --pen:#c23a2f; --pen-soft:#fbecea;
+  --hi:#fff2a8; --hi-ink:#5b4a00;
+  --ok:#25784a; --ok-soft:#e0f1e6; --mid:#a86a00; --mid-soft:#fbf0d9; --bad:#b03539; --bad-soft:#f8e3e3;
+  --display:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --hand:"Caveat","Noto Sans TC",cursive;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f141a; --paper:#171e27; --ink:#e3e9ef; --muted:#94a2b0; --line:#2a3542; --rule:#1f2832;
+  --accent:#94adff; --accent-soft:#1f2a45; --pen:#ff8a7e; --pen-soft:#3a1f1d; --hi:#4a4210; --hi-ink:#ffe98a;
+  --ok:#6fd099; --ok-soft:#163025; --mid:#f2b950; --mid-soft:#3a2d12; --bad:#f28a8d; --bad-soft:#3a1c1e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f141a; --paper:#171e27; --ink:#e3e9ef; --muted:#94a2b0; --line:#2a3542; --rule:#1f2832;
+  --accent:#94adff; --accent-soft:#1f2a45; --pen:#ff8a7e; --pen-soft:#3a1f1d; --hi:#4a4210; --hi-ink:#ffe98a;
+  --ok:#6fd099; --ok-soft:#163025; --mid:#f2b950; --mid-soft:#3a2d12; --bad:#f28a8d; --bad-soft:#3a1c1e; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:120px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:env(safe-area-inset-top,0px) 64px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:20;background:var(--bg)}
+.wrap{max-width:800px;margin:0 auto}
+sub,sup{font-size:.72em;line-height:0}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* masthead */
+header{padding-block:40px 20px;display:grid;gap:10px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:900;font-size:clamp(32px,7vw,52px);line-height:1.15;margin:0;text-wrap:balance}
+h1 .stamp{display:inline-block;font-family:var(--hand);font-weight:600;font-size:.5em;color:var(--pen);
+  border:2px solid var(--pen);border-radius:6px;padding:0 10px;transform:rotate(-6deg) translateY(-6px);margin-left:10px;vertical-align:middle}
+.lede{color:var(--muted);margin:0;max-width:62ch}
+.how{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:14px;color:var(--muted);margin-top:4px}
+.how span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:2px;display:inline-block}
+
+/* sticky bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bg);padding-block:10px;
+  border-bottom:1px solid var(--line);display:grid;gap:8px}
+.bar-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.score{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px}
+.score b{font-size:22px;color:var(--pen);font-family:var(--hand);font-weight:600;letter-spacing:.02em}
+.meter{flex:1;min-width:100px;height:6px;background:var(--line);border-radius:3px;overflow:hidden;display:flex}
+.meter i{display:block;height:100%;transition:width .35s}
+.meter .m-ok{background:var(--ok)} .meter .m-mid{background:var(--mid)} .meter .m-bad{background:var(--bad)}
+.tools{display:flex;gap:6px;flex-wrap:wrap}
+.tbtn{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:4px 12px;font-size:13px}
+.tbtn:hover{border-color:var(--accent)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;width:32px;height:32px;border-radius:50%;border:1.5px solid var(--line);background:var(--paper);
+  font-family:var(--mono);font-size:13px;display:grid;place-items:center;text-decoration:none;color:var(--ink)}
+.chip.s-ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.chip.s-mid{border-color:var(--mid);background:var(--mid-soft);color:var(--mid)}
+.chip.s-bad{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.chip.s-part{border-style:dashed;border-color:var(--accent)}
+
+/* sheet */
+.page{margin-top:32px}
+.page-label{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:12px;
+  color:var(--muted);letter-spacing:.1em;margin-bottom:8px;gap:12px}
+.sheet{background:var(--paper);border:1px solid var(--line);border-radius:3px;
+  box-shadow:0 1px 0 var(--line),0 8px 24px -18px rgba(20,30,50,.35);padding:4px clamp(16px,4.5vw,40px)}
+.q{padding-block:28px;border-bottom:1px solid var(--rule);display:grid;gap:14px}
+.q:last-child{border-bottom:0}
+.qhead{display:flex;gap:12px;align-items:baseline}
+.qnum{font-family:var(--display);font-weight:900;font-size:24px;color:var(--accent);min-width:2.2ch}
+.qtext{flex:1;min-width:0;font-size:17px}
+.qtext .en{display:block;font-size:14px;color:var(--muted);font-style:italic}
+.pts{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+.fig{overflow-x:auto;display:flex;justify-content:center;padding-block:6px}
+.fig svg{max-width:100%;height:auto;overflow:visible}
+.figrow{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 32px}
+.figrow figure{margin:0;display:grid;justify-items:center;gap:2px}
+.figrow figcaption{font-family:var(--mono);font-size:13px;color:var(--muted)}
+svg .b{stroke:var(--ink);stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+svg .w{fill:var(--ink)}
+svg .ring{stroke:var(--ink);stroke-width:2.2;fill:var(--paper)}
+svg text{fill:var(--ink);font-family:var(--body);font-size:15px;font-weight:500}
+svg .lbl{font-family:var(--mono);font-size:13px;fill:var(--muted)}
+.ans svg .b{stroke:var(--pen)} .ans svg .w{fill:var(--pen)} .ans svg text{fill:var(--pen)} .ans svg .ring{stroke:var(--pen)}
+
+.part{display:grid;gap:10px;padding-left:clamp(0px,3vw,36px)}
+.ptext{font-weight:500}
+.ptext .pts{margin-left:6px}
+textarea{width:100%;min-height:64px;resize:vertical;font:inherit;font-size:15px;color:var(--ink);
+  background:repeating-linear-gradient(var(--paper) 0 29px,var(--rule) 29px 30px);line-height:30px;
+  border:1px solid var(--line);border-radius:4px;padding:0 10px}
+textarea::placeholder{color:var(--muted)}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.btn{border:1.5px solid var(--line);background:var(--paper);border-radius:6px;padding:6px 14px;font-size:14px;font-weight:500;
+  display:inline-flex;align-items:center;gap:6px;transition:border-color .15s,background .15s}
+.btn svg{width:16px;height:16px;flex:none}
+.btn.hint{border-color:#d8c35a}
+.btn.hint:hover,.btn.hint[aria-expanded="true"]{background:var(--hi);color:var(--hi-ink)}
+.btn.show{border-color:var(--pen);color:var(--pen)}
+.btn.show:hover,.btn.show[aria-expanded="true"]{background:var(--pen-soft)}
+.btn.step{border-color:var(--accent);color:var(--accent)}
+.btn.step:hover{background:var(--accent-soft)}
+.btn[disabled]{opacity:.5;cursor:default}
+.hintbox{background:var(--hi);color:var(--hi-ink);padding:8px 14px;border-radius:4px;font-size:15px}
+.hintbox::before{content:"提示　";font-weight:700}
+.ans{border:1.5px solid var(--pen);border-radius:6px;padding:12px 16px;background:var(--paper);display:grid;gap:8px;position:relative}
+.ans .tag{position:absolute;top:-12px;left:12px;background:var(--paper);padding:0 6px;font-family:var(--hand);font-size:20px;color:var(--pen);line-height:1.2}
+.ans .final{color:var(--pen);font-weight:700;font-size:17px}
+.steps{margin:0;padding:0;list-style:none;display:grid;gap:8px;counter-reset:s}
+.steps li{counter-increment:s;display:grid;grid-template-columns:28px 1fr;gap:8px;animation:in .3s ease}
+.steps li::before{content:counter(s);width:24px;height:24px;border-radius:50%;background:var(--accent-soft);color:var(--accent);
+  font-family:var(--mono);font-size:12px;font-weight:600;display:grid;place-items:center;margin-top:3px}
+.steps li > div{min-width:0}
+.steps p{margin:0 0 4px}
+@keyframes in{from{opacity:.2;transform:translateY(4px)}to{opacity:1;transform:none}}
+.grade{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-top:1px dashed var(--line);padding-top:10px;font-size:14px}
+.grade .q-label{color:var(--muted)}
+.g{border:1.5px solid var(--line);background:var(--paper);border-radius:999px;padding:3px 12px;font-size:13px}
+.g.ok[aria-pressed="true"]{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.g.mid[aria-pressed="true"]{background:var(--mid-soft);border-color:var(--mid);color:var(--mid)}
+.g.bad[aria-pressed="true"]{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.tbl{overflow-x:auto}
+.tbl table{border-collapse:collapse;font-size:14px;min-width:100%}
+.tbl th,.tbl td{border:1px solid var(--line);padding:4px 10px;text-align:left}
+.tbl th{background:var(--rule);font-weight:500}
+.eq{font-family:var(--mono);font-size:14px;background:var(--rule);padding:6px 10px;border-radius:4px;overflow-x:auto;white-space:nowrap}
+.rxn{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px}
+.summary{margin-top:32px;background:var(--paper);border:1px solid var(--line);border-radius:3px;padding:24px clamp(16px,4.5vw,40px)}
+.summary h2{font-family:var(--display);margin:0 0 8px;font-size:24px}
+.summary ul{margin:8px 0 0;padding-left:20px}
+footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Organic Chemistry · Practice Exam</div>
+    <h1>有機化學模擬考<span class="stamp">練習卷</span></h1>
+    <p class="lede">題型照原考卷的三頁版面重新出題，全部是手寫作答題：寫名稱、判斷構型、畫產物、解釋機制。先在格子裡寫下你的答案，再對照紅筆解答和分步講解，自己給分。</p>
+    <div class="how">
+      <span><i class="dot" style="background:var(--hi)"></i>提示：卡住時看一下方向</span>
+      <span><i class="dot" style="background:var(--pen)"></i>看答案：紅筆標準解答</span>
+      <span><i class="dot" style="background:var(--accent)"></i>逐步講解：一步一步展開</span>
+    </div>
+  </header>
+
+  <div class="bar">
+    <div class="bar-row">
+      <span class="score">自評得分 <b id="score">0</b> / <span id="total">100</span></span>
+      <span class="score" id="done">已批改 0 / 0</span>
+      <span class="meter" aria-hidden="true"><i class="m-ok" id="mOk"></i><i class="m-mid" id="mMid"></i><i class="m-bad" id="mBad"></i></span>
+      <span class="tools">
+        <button class="tbtn" id="expandAll" type="button">展開全部答案</button>
+        <button class="tbtn" id="reset" type="button">重新作答</button>
+      </span>
+    </div>
+    <nav class="chips" id="chips" aria-label="題目導覽"></nav>
+  </div>
+
+  <main id="exam"></main>
+
+  <section class="summary" id="summary" hidden>
+    <h2>全部批改完了</h2>
+    <p id="sumText"></p>
+    <ul id="sumList"></ul>
+  </section>
+
+  <footer>題目依模糊考卷推測的題型重新編寫，不是原題。作答與自評只存在你自己的瀏覽器裡。</footer>
+</div>
+
+<script>
+/* ---------- drawing helpers ---------- */
+const P=(pts)=>`<polyline class="b" points="${pts}"/>`;
+const L=(x1,y1,x2,y2,extra="")=>`<line class="b" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${extra}/>`;
+const T=(x,y,s,anchor="start")=>`<text x="${x}" y="${y}" text-anchor="${anchor}">${s}</text>`;
+const DASH=(x1,y1,x2,y2)=>L(x1,y1,x2,y2,'stroke-dasharray="2.5 4" stroke-width="3.2"');
+function WEDGE(x1,y1,x2,y2,w=5){const dx=x2-x1,dy=y2-y1,l=Math.hypot(dx,dy),nx=-dy/l*w,ny=dx/l*w;
+  return `<polygon class="w" points="${x1},${y1} ${x2+nx},${y2+ny} ${x2-nx},${y2-ny}"/>`}
+function ring(cx,cy,r,n,rot=-90){const v=[];for(let i=0;i<n;i++){const a=(rot+360/n*i)*Math.PI/180;v.push([+(cx+r*Math.cos(a)).toFixed(1),+(cy+r*Math.sin(a)).toFixed(1)])}return v}
+const POLY=(v)=>`<polygon class="b" points="${v.map(p=>p.join(",")).join(" ")}"/>`;
+function inner(a,b,c,k=.2){/* inner double-bond line toward center c, shortened */
+  const s=t=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];const p=s(.18),q=s(.82);
+  const f=pt=>[pt[0]+(c[0]-pt[0])*k,pt[1]+(c[1]-pt[1])*k];const A=f(p),B=f(q);return L(A[0].toFixed(1),A[1].toFixed(1),B[0].toFixed(1),B[1].toFixed(1))}
+const svg=(w,h,body,label)=>`<svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="${label}">${body}</svg>`;
+function newman(cx,cy,front,back){
+  const rad=a=>a*Math.PI/180;let s="";
+  back.forEach(([a,t])=>{const c=Math.cos(rad(a)),n=Math.sin(rad(a));
+    s+=L((cx+45*c).toFixed(1),(cy-45*n).toFixed(1),(cx+70*c).toFixed(1),(cy-70*n).toFixed(1));
+    s+=`<text x="${(cx+86*c).toFixed(1)}" y="${(cy-86*n+5).toFixed(1)}" text-anchor="middle">${t}</text>`});
+  s+=`<circle class="ring" cx="${cx}" cy="${cy}" r="45"/>`;
+  front.forEach(([a,t])=>{const c=Math.cos(rad(a)),n=Math.sin(rad(a));
+    s+=L(cx,cy,(cx+62*c).toFixed(1),(cy-62*n).toFixed(1));
+    s+=`<text x="${(cx+76*c).toFixed(1)}" y="${(cy-76*n+5).toFixed(1)}" text-anchor="middle">${t}</text>`});
+  return s}
+
+const hx=ring(110,90,35,6), cp=ring(70,68,30,5), mh=ring(120,90,38,6), h2=ring(80,72,32,6);
+const sm=ring(50,64,28,6), smc=[50,64];
+const ME="CH₃";
+const FIG={
+ q1a: svg(250,120,P("20,100 60,80 100,100 140,80 180,100 220,80")+L(60,80,60,40)+P("140,80 140,40 175,20"),"六碳主鏈，C2 甲基，C4 乙基"),
+ q1c: svg(160,120,POLY(cp)+L(cp[0][0],cp[0][1],70,12)+T(76,18,"Cl")+L(cp[1][0],cp[1][1],126,46),"環戊烷，Cl 與甲基在相鄰碳"),
+ q2a: svg(220,160,P("20,90 60,70 100,90 140,70 180,90")+L(60,70,38,32)+L(60,70,82,32)+P("100,90 100,130 135,150"),"3-ethyl-2,2-dimethylpentane"),
+ q2b: svg(170,130,POLY(h2)+WEDGE(h2[1][0],h2[1][1],137,38)+WEDGE(h2[5][0],h2[5][1],23,38)+T(140,36,ME)+T(20,36,ME,"end"),"cis-1,3-dimethylcyclohexane"),
+ q3a: svg(270,130,L(130,85,78,112)+P("130,85 182,112 234,85")+WEDGE(130,85,170,34)+T(174,30,"Br")+DASH(130,85,92,38)+T(80,32,"H"),"2-bromobutane，Br 楔形，H 虛線"),
+ q3b: svg(270,130,P("130,85 78,112 30,85")+L(130,85,182,112)+WEDGE(130,85,92,34)+T(70,30,"Cl")+DASH(130,85,168,38)+T(172,32,"H"),"2-chlorobutane，Cl 楔形，H 虛線"),
+ q4a: svg(190,110,P("30,90 75,65 120,90 165,65")+L(75,65,55,28)+L(75,65,98,28)+T(36,22,"Br"),"2-bromo-2-methylbutane"),
+ q4b: svg(250,170,P("20,80 60,60 100,80 140,60 180,80 220,60")+DASH(100,80,75,125)+WEDGE(100,80,125,125)+T(129,142,"Br")+T(70,142,ME,"end"),"3-bromo-3-methylhexane，Br 楔形，甲基虛線"),
+ q4bAns: svg(250,170,P("20,80 60,60 100,80 140,60 180,80 220,60")+WEDGE(100,80,75,125)+DASH(100,80,125,125)+T(129,142,"Br")+T(70,142,ME,"end"),"鏡像：Br 虛線，甲基楔形"),
+ q6: svg(250,175,POLY(mh)+L(mh[1][0],mh[1][1],182,54)+T(184,52,"OH")+P(`${mh[2][0]},${mh[2][1]} 185,128 218,109`)+L(185,128,185,162)+L(mh[5][0],mh[5][1],55,52),"薄荷醇骨架式"),
+ q10: svg(460,224,newman(110,105,[[90,ME],[210,"H"],[330,"H"]],[[30,ME],[150,"H"],[270,"H"]])+`<text class="lbl" x="110" y="220" text-anchor="middle">(A)</text>`+
+                     newman(340,105,[[90,ME],[210,"H"],[330,"H"]],[[270,ME],[30,"H"],[150,"H"]])+`<text class="lbl" x="340" y="220" text-anchor="middle">(B)</text>`,"兩個丁烷紐曼投影式 A 與 B"),
+ q10Ans: svg(230,210,newman(110,105,[[90,ME],[210,"H"],[330,"H"]],[[105,ME],[225,"H"],[345,"H"]]),"全重疊式：兩個甲基重疊"),
+ q11a: svg(300,110,POLY(sm)+L(sm[0][0],sm[0][1],50,12)+T(56,16,"Br")+L(104,64,216,64)+P("208,58 216,64 208,70")+`<text x="160" y="54" text-anchor="middle">KOC(CH₃)₃</text><text x="160" y="86" text-anchor="middle">t-BuOH, Δ</text>`+T(236,70,"?"),"溴環己烷與第三丁氧鉀加熱"),
+ q11b: svg(300,110,POLY(sm)+L(sm[0][0],sm[0][1],32,12)+T(14,12,"Br")+L(sm[0][0],sm[0][1],68,12)+T(72,12,ME)+L(108,64,216,64)+P("208,58 216,64 208,70")+`<text x="162" y="54" text-anchor="middle">CH₃OH, Δ</text>`+T(236,70,"?"),"1-溴-1-甲基環己烷在甲醇中加熱"),
+ cyhexene: svg(110,110,POLY(sm)+inner(sm[1],sm[2],smc),"環己烯"),
+ mecyhexene: svg(110,110,POLY(sm)+inner(sm[0],sm[1],smc)+L(sm[0][0],sm[0][1],50,12)+T(56,16,ME),"1-甲基環己烯"),
+ ether: svg(130,110,POLY(sm)+L(sm[0][0],sm[0][1],32,12)+T(26,12,"OCH₃","end")+L(sm[0][0],sm[0][1],68,12)+T(72,12,ME),"1-甲氧基-1-甲基環己烷")
+};
+FIG.q1b=svg(200,140,POLY(hx)+P(`${hx[0][0]},${hx[0][1]} 110,22 138,6`)+L(hx[2][0],hx[2][1],170,125),"環己烷，乙基與甲基相隔一個碳");
+const fig=(k)=>`<div class="fig">${FIG[k]}</div>`;
+const figs=(arr)=>`<div class="fig"><div class="figrow">${arr.map(([k,c])=>`<figure>${FIG[k]}${c?`<figcaption>${c}</figcaption>`:""}</figure>`).join("")}</div></div>`;
+
+/* ---------- questions ---------- */
+const PAGES=[
+{label:"第 1 頁",topic:"命名與立體化學",qs:[
+ {n:1,text:"寫出下列化合物的 IUPAC 名稱。",en:"Give the IUPAC name for each of the following compounds.",parts:[
+  {t:"(a)",pts:4,fig:"q1a",hint:"先找出最長的碳鏈，再從離第一個取代基最近的一端開始編號。",
+   ans:`<p class="final">4-ethyl-2-methylhexane</p>`,
+   steps:["最長碳鏈有 6 個碳 → 母體是 <b>hexane</b>。走乙基那一支也只有 6 個碳，取代基數目一樣，所以哪條都行。",
+          "兩個方向編號：左→右得到取代基位置 {2, 4}；右→左得到 {3, 5}。第一個不同處 2 &lt; 3，選左→右。",
+          "取代基：C2 甲基、C4 乙基。名稱裡依<b>字母順序</b>排列（e 在 m 前面），不是依號碼大小。",
+          "合起來：<b>4-ethyl-2-methylhexane</b>。常見錯誤：寫成 2-methyl-4-ethylhexane（字母順序錯）。"]},
+  {t:"(b)",pts:4,fig:"q1b",hint:"環上只有兩個取代基時，號碼組合一樣，就看字母順序決定誰是 1 號。",
+   ans:`<p class="final">1-ethyl-3-methylcyclohexane</p>`,
+   steps:["母體是六碳環：<b>cyclohexane</b>。",
+          "兩個取代基相隔一個碳，不管怎麼編都是 <b>1,3</b>。",
+          "號碼平手時，字母順序先出現的取代基拿 1 號：ethyl &lt; methyl，所以乙基在 C1。",
+          "答案 <b>1-ethyl-3-methylcyclohexane</b>。1,5 編號不是最小組合，錯。"]},
+  {t:"(c)",pts:4,fig:"q1c",hint:"鹵素在 IUPAC 命名中也是當作取代基（字首 chloro-）。",
+   ans:`<p class="final">1-chloro-2-methylcyclopentane</p>`,
+   steps:["五碳環 → <b>cyclopentane</b>。",
+          "Cl 與甲基在相鄰碳上，位置是 1,2。",
+          "鹵素和烷基同等級，照字母順序：chloro（c）&lt; methyl（m），Cl 在 C1。",
+          "答案 <b>1-chloro-2-methylcyclopentane</b>。若要更完整，還要加上 cis/trans，這張圖沒有標示立體化學，所以不用寫。"]}
+ ]},
+ {n:2,text:"依名稱畫出下列化合物的骨架式（bond-line structure）。",en:"Draw the bond-line structure of each compound.",parts:[
+  {t:"(a) 3-ethyl-2,2-dimethylpentane",pts:4,hint:"先畫五碳主鏈並編號，C2 上放兩個甲基，C3 放一個乙基。",
+   ans:`${fig("q2a")}`,
+   steps:["pentane：畫 5 個碳的鋸齒鏈，從左到右編號 C1–C5。",
+          "2,2-dimethyl：C2 上接<b>兩個</b>甲基，這個碳變成四級碳（連四個碳）。",
+          "3-ethyl：C3 接一個兩碳支鏈。",
+          "檢查：最長鏈仍然是 5 碳嗎？從乙基末端走過去 C3→C4→C5 也只有 5 碳，名稱成立。"]},
+  {t:"(b) cis-1,3-dimethylcyclohexane",pts:4,hint:"cis 表示兩個甲基在環的同一面，可以用兩個楔形鍵表示。",
+   ans:`${fig("q2b")}`,
+   steps:["畫六角形，選兩個相隔一個碳的位置（1,3）。",
+          "<b>cis</b>：兩個甲基在環平面的同一側，所以都畫楔形（或都畫虛線）。",
+          "如果一個楔形一個虛線，就是 trans。",
+          "延伸：cis-1,3 在椅式中可以兩個都在 equatorial，所以 cis 比 trans 穩定。這點和 1,2、1,4 的情況不一樣，很常考。"]}
+ ]},
+ {n:3,text:"判斷下列立體中心是 R 或 S。",en:"Assign R or S configuration to each stereocenter.",parts:[
+  {t:"(a)",pts:4,fig:"q3a",hint:"先排 CIP 優先序。H 在虛線（朝後），可以直接看 1→2→3 的方向。",
+   ans:`<p class="final">(R)-2-bromobutane</p>`,
+   steps:["CIP 優先序看直接相連原子的原子序：Br（35）&gt; C &gt; H。兩個碳再往外比：乙基的 CH<sub>2</sub> 連著 (C,H,H)，甲基是 (H,H,H)，所以<b>乙基 &gt; 甲基</b>。",
+          "排序：① Br　② CH<sub>2</sub>CH<sub>3</sub>　③ CH<sub>3</sub>　④ H。",
+          "H 在虛線，表示它朝紙後，正好是我們要的觀看方向。",
+          "Br（右上）→ 乙基（右下）→ 甲基（左下）：<b>順時針 → R</b>。"]},
+  {t:"(b)",pts:4,fig:"q3b",hint:"同樣是 H 在虛線。注意這次乙基和甲基的位置左右對調了。",
+   ans:`<p class="final">(S)-2-chlorobutane</p>`,
+   steps:["優先序：① Cl　② CH<sub>2</sub>CH<sub>3</sub>　③ CH<sub>3</sub>　④ H。",
+          "H 在虛線（朝後），直接看。",
+          "Cl（左上）→ 乙基（左下）→ 甲基（右下）：<b>逆時針 → S</b>。",
+          "提醒：如果最低優先的 H 畫在楔形（朝你），看到的方向要<b>反過來</b>。"]}
+ ]},
+ {n:4,text:"判斷下列化合物是否具有手性；若有，畫出它的鏡像異構物並標示 R/S。",en:"Is each compound chiral? If so, draw its enantiomer and label R/S.",parts:[
+  {t:"(a)",pts:4,fig:"q4a",hint:"看接 Br 的那個碳，它連著的四個基團真的都不一樣嗎？",
+   ans:`<p class="final">非手性（achiral），沒有立體中心，不存在鏡像異構物。</p>`,
+   steps:["接 Br 的 C2 連著：Br、CH<sub>2</sub>CH<sub>3</sub>、CH<sub>3</sub>、CH<sub>3</sub>。",
+          "有<b>兩個相同的甲基</b>，所以 C2 不是立體中心。",
+          "分子裡其他碳都至少有兩個 H，也不是立體中心。",
+          "沒有立體中心（也沒有其他手性元素）→ 分子與鏡像可重疊 → <b>非手性</b>。這種「看起來很像有」的題目是陷阱題。"]},
+  {t:"(b)",pts:6,fig:"q4b",hint:"C3 連著 Br、甲基、乙基、丙基。比較乙基和丙基時要一路往外看。",
+   ans:`<p>原圖為 <b class="final">(S)</b>-3-bromo-3-methylhexane；鏡像異構物為 <b class="final">(R)</b>，畫法是把楔形和虛線互換：</p>${fig("q4bAns")}`,
+   steps:["C3 連著四個不同基團：Br、CH<sub>3</sub>、CH<sub>2</sub>CH<sub>3</sub>（左側 C2–C1）、CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub>（右側 C4–C6），所以是<b>手性</b>的。",
+          "優先序：Br 最高。乙基 vs 丙基：第一個碳都是 (C,H,H) 平手；往外一層，乙基末端是 (H,H,H)，丙基是 (C,H,H)，<b>丙基 &gt; 乙基</b>。最低是甲基。",
+          "甲基（最低）在虛線朝後，可以直接看：Br（右下）→ 丙基（右上）→ 乙基（左上）是<b>逆時針 → S</b>。",
+          "鏡像異構物：只要把 Br 和甲基的楔形／虛線互換，構型就變成 <b>R</b>。"]}
+ ]},
+ {n:5,text:"(CH<sub>3</sub>)<sub>3</sub>CBr 在水／乙醇中很快進行 SN1，卻幾乎不進行 SN2。請解釋原因。",en:"Explain why tert-butyl bromide reacts readily by SN1 but hardly at all by SN2.",parts:[
+  {t:"",pts:6,hint:"從兩個方向回答：SN1 的中間體有多穩定？SN2 的過渡態有什麼阻礙？",
+   ans:`<p class="final">SN1 會生成穩定的三級碳陽離子，所以快；SN2 需要背面進攻，但三個甲基擋住了背面，過渡態能量太高，所以幾乎不反應。</p>`,
+   steps:["<b>SN1 的速率決定步驟</b>是 C–Br 斷裂生成碳陽離子。(CH<sub>3</sub>)<sub>3</sub>C<sup>+</sup> 是三級碳陽離子，有 9 個 C–H 鍵可以進行超共軛，加上甲基的推電子誘導效應，非常穩定，活化能低。",
+          "質子性溶劑（水、乙醇）能用氫鍵穩定離去的 Br<sup>−</sup> 和碳陽離子，進一步加速 SN1。",
+          "<b>SN2</b> 需要親核基從 C–Br 的正後方 180° 進攻，形成五配位的過渡態。三級碳周圍三個甲基把背面完全擋住（立體障礙），過渡態能量極高。",
+          "結論：反應性順序 SN1 是 3° &gt; 2° &gt; 1°，SN2 剛好相反 CH<sub>3</sub> &gt; 1° &gt; 2° ≫ 3°。"]}
+ ]}
+]},
+{label:"第 2 頁",topic:"立體異構與反應動力學",qs:[
+ {n:6,text:"下圖為薄荷醇（menthol）的骨架式（未標示立體化學），回答 (a)–(f)。",en:"Answer (a)–(f) for menthol shown below.",fig:"q6",parts:[
+  {t:"(a) 分子式",pts:2,hint:"數碳：環 6 個、異丙基 3 個、甲基 1 個。再用不飽和度回推 H。",
+   ans:`<p class="final">C<sub>10</sub>H<sub>20</sub>O</p>`,
+   steps:["碳：6（環）+ 3（異丙基）+ 1（甲基）= 10。","飽和非環的 C<sub>10</sub> 醇應為 C<sub>10</sub>H<sub>22</sub>O；有一個環，少 2 個 H → <b>C<sub>10</sub>H<sub>20</sub>O</b>。"]},
+  {t:"(b) 不飽和度（degree of unsaturation）",pts:2,hint:"公式：(2C + 2 − H) / 2，氧不影響。",
+   ans:`<p class="final">1</p>`,
+   steps:["(2×10 + 2 − 20) / 2 = <b>1</b>。","這個 1 對應的就是那個環，分子中沒有雙鍵。"]},
+  {t:"(c) 立體中心數目",pts:2,hint:"找連著四個不同基團的碳。異丙基中間那個碳要小心。",
+   ans:`<p class="final">3 個</p>`,
+   steps:["帶 OH 的碳、帶異丙基的碳、帶甲基的碳：各自連著四個不同基團 → 立體中心。","異丙基中間的 CH 連著兩個相同的 CH<sub>3</sub>，不是立體中心。環上其他 CH<sub>2</sub> 也不是。"]},
+  {t:"(d) 最多可能有幾個立體異構物？",pts:2,hint:"沒有內消旋（meso）的情況，用 2<sup>n</sup>。",
+   ans:`<p class="final">2<sup>3</sup> = 8 個（4 對鏡像異構物）</p>`,
+   steps:["n = 3，最多 2<sup>3</sup> = <b>8</b>。","薄荷醇沒有對稱面，不會出現 meso，所以 8 個都存在。天然的是 (1R,2S,5R)-(−)-menthol。"]},
+  {t:"(e) 主要官能基及其類別",pts:2,hint:"看 OH 接在哪一類碳上。",
+   ans:`<p class="final">羥基（–OH），二級醇（secondary alcohol）</p>`,
+   steps:["接 OH 的碳連著兩個碳（環上兩側），還有一個 H → <b>二級醇</b>。"]},
+  {t:"(f) 天然薄荷醇最穩定的椅式構形中，三個取代基分別在 axial 還是 equatorial？",pts:2,hint:"天然薄荷醇之所以特別穩定，就是因為取代基的排列最理想。",
+   ans:`<p class="final">三個（OH、異丙基、甲基）全部在 equatorial。</p>`,
+   steps:["大的取代基在 axial 會和同側的 axial H 發生 1,3-diaxial 作用，造成張力。","天然 (−)-menthol 的三個取代基排列剛好可以同時放在 equatorial，所以它是 8 個立體異構物中最穩定的一個。"]}
+ ]},
+ {n:7,text:"CH<sub>3</sub>Br + OH<sup>−</sup> → CH<sub>3</sub>OH + Br<sup>−</sup>，實驗測得速率式為：",en:"",eq:"rate = k [CH₃Br] [OH⁻]",parts:[
+  {t:"(a) 此反應的總反應級數為何？",pts:2,hint:"把速率式中各濃度的次方加起來。",
+   ans:`<p class="final">二級（second order）</p>`,
+   steps:["對 CH<sub>3</sub>Br 一級、對 OH<sup>−</sup> 一級，總和 1 + 1 = <b>2</b>。"]},
+  {t:"(b) 若 [CH<sub>3</sub>Br] 變為 3 倍，[OH<sup>−</sup>] 變為 2 倍，速率變為原來的幾倍？",pts:2,hint:"兩個濃度的倍數直接相乘。",
+   ans:`<p class="final">6 倍</p>`,
+   steps:["rate' / rate = 3 × 2 = <b>6</b>。"]},
+  {t:"(c) 寫出反應機制名稱，並畫出（或描述）過渡態。",pts:4,hint:"速率同時取決於兩個反應物，代表它們在同一步相撞。",
+   ans:`<p class="final">SN2（雙分子親核取代），一步協同完成。</p><div class="eq">[ HO<sup>δ−</sup> ··· CH₃ ··· Br<sup>δ−</sup> ]‡</div>`,
+   steps:["速率同時跟兩個反應物的濃度成正比 → 速率決定步驟有兩個分子參與 → <b>SN2</b>。",
+          "OH<sup>−</sup> 從 Br 的<b>正後方</b>進攻，C–O 鍵形成和 C–Br 鍵斷裂同時發生。",
+          "過渡態中碳是五配位：三個 H 在同一平面（像三角雙錐的赤道），OH 和 Br 在兩端各帶部分負電荷。",
+          "結果：碳的構型像雨傘被風吹翻一樣<b>反轉</b>（Walden inversion）。"]},
+  {t:"(d) 若受質換成 (CH<sub>3</sub>)<sub>3</sub>CBr、溶劑為水，速率式會變成什麼？",pts:2,hint:"三級受質在質子性溶劑中走哪一種機制？",
+   ans:`<p class="final">rate = k [(CH<sub>3</sub>)<sub>3</sub>CBr]（一級，SN1）</p>`,
+   steps:["三級鹵烷 + 弱親核基 + 質子性溶劑 → <b>SN1</b>。","SN1 的速率決定步驟只有受質解離成碳陽離子，親核基不參與，所以速率式裡沒有它的濃度。"]}
+ ]},
+ {n:8,text:"比較下列兩個反應（溶劑皆為丙酮）：",en:"",eq:"① CH₃CH₂CH₂Br + NaI　　② (CH₃)₃CBr + NaI",parts:[
+  {t:"(a) 寫出兩個反應的主要產物。",pts:4,hint:"NaI / 丙酮是經典的 SN2 條件（Finkelstein 反應）。",
+   ans:`<p class="final">① CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>I（+ NaBr↓）　② 幾乎不反應</p>`,
+   steps:["I<sup>−</sup> 是好的親核基，丙酮是極性非質子溶劑 → SN2 條件。",
+          "① 一級鹵烷，SN2 順利進行，生成 1-iodopropane。副產物 NaBr 不溶於丙酮，會產生白色沉澱，這也是推動平衡的原因。",
+          "② 三級鹵烷無法 SN2；丙酮又不是質子性溶劑，SN1 也很難發生 → 實驗上觀察不到沉澱。"]},
+  {t:"(b) 哪一個反應較快？為什麼？",pts:2,hint:"想想 SN2 需要從哪個方向進攻。",
+   ans:`<p class="final">① 較快。三級碳的背面被三個甲基擋住，I<sup>−</sup> 無法靠近。</p>`,
+   steps:["SN2 速率：CH<sub>3</sub> &gt; 1° &gt; 2° ≫ 3°，原因是<b>立體障礙</b>。","注意：兩者的離去基都是 Br，所以差別完全來自碳骨架。"]},
+  {t:"(c) 若改用 (S)-2-bromobutane 與 NaI 反應，產物的構型是 R 還是 S？",pts:4,hint:"SN2 會反轉構型。但「幾何反轉」不一定等於「R/S 標記改變」，要重新排優先序。",
+   ans:`<p class="final">(R)-2-iodobutane</p>`,
+   steps:["SN2 背面進攻 → 立體中心<b>幾何上反轉</b>。",
+          "重新排優先序：I &gt; CH<sub>2</sub>CH<sub>3</sub> &gt; CH<sub>3</sub> &gt; H，和原本 Br &gt; Et &gt; Me &gt; H 的順序一樣（I 取代 Br 的位置，仍是第一優先）。",
+          "優先序不變、幾何反轉 → 標記從 S 變成 <b>R</b>。",
+          "陷阱：SN2 一定會讓幾何反轉，但 R/S 標記只是依優先序決定的名字。如果新基團在優先序裡的排名和離去基不同，標記可能不變，所以每次都要重新判斷。"]}
+ ]}
+]},
+{label:"第 3 頁",topic:"構形分析與反應預測",qs:[
+ {n:9,text:"甲基環己烷（methylcyclohexane）的椅式構形。",en:"Chair conformations of methylcyclohexane.",parts:[
+  {t:"(a) 甲基環己烷的兩個椅式構形中，甲基分別在什麼位置？",pts:2,hint:"環翻轉（ring flip）時，axial 和 equatorial 會互換。",
+   ans:`<p class="final">一個是甲基在 axial，翻轉後變成甲基在 equatorial。</p>`,
+   steps:["環翻轉時，所有 axial 位置變成 equatorial，反之亦然。","所以甲基環己烷只有兩種椅式：甲基 axial 和甲基 equatorial。"]},
+  {t:"(b) 哪一個較穩定？為什麼？",pts:2,hint:"axial 的甲基會和哪些氫原子靠得很近？",
+   ans:`<p class="final">甲基在 equatorial 較穩定。</p>`,
+   steps:["甲基在 axial 時，會和同一側 C3、C5 上的 axial H 靠得很近，稱為 <b>1,3-diaxial 作用</b>。",
+          "這其實就是兩個 gauche-butane 作用（各約 3.8 kJ/mol），合計約 <b>7.6 kJ/mol</b> 的立體張力。",
+          "在 equatorial 時甲基指向環外，沒有這種張力。"]},
+  {t:"(c) 已知 ΔG° = 7.6 kJ/mol，計算 25 °C 時 equatorial 構形所佔的百分比。",pts:4,hint:"ΔG° = −RT ln K，K = [equatorial] / [axial]。",
+   ans:`<p class="final">約 95.5 % 為 equatorial</p>`,
+   steps:[`寫出關係式：<div class="eq">K = e^(ΔG° / RT)</div>（axial → equatorial 是放能方向，K &gt; 1）`,
+          `代入：<div class="eq">ΔG°/RT = 7600 / (8.314 × 298) ≈ 3.07</div>`,
+          `<div class="eq">K = e^3.07 ≈ 21.5</div>`,
+          `百分比：<div class="eq">21.5 / (21.5 + 1) × 100% ≈ 95.5%</div>也就是大約每 22 個分子裡只有 1 個是甲基 axial。`]}
+ ]},
+ {n:10,text:"下圖為丁烷沿 C2–C3 鍵的兩個紐曼投影式。",en:"Two Newman projections of butane viewed along C2–C3.",fig:"q10",parts:[
+  {t:"(a) 寫出 A、B 各是哪一種構形。",pts:2,hint:"看前後兩個 CH<sub>3</sub> 之間的二面角。",
+   ans:`<p class="final">A：gauche（間扭式交錯，二面角 60°）　B：anti（反式交錯，二面角 180°）</p>`,
+   steps:["兩個圖前後的鍵都互相錯開 → 都是<b>交錯式（staggered）</b>。","A 中前面 CH<sub>3</sub> 朝上、後面 CH<sub>3</sub> 朝右上，相差 60° → gauche。","B 中後面 CH<sub>3</sub> 朝正下方，相差 180° → anti。"]},
+  {t:"(b) 哪一個能量較低？差多少？",pts:3,hint:"兩個甲基靠近時會產生哪一種張力？",
+   ans:`<p class="final">B（anti）較穩定，A（gauche）高約 3.8 kJ/mol（0.9 kcal/mol）。</p>`,
+   steps:["gauche 中兩個甲基距離近，電子雲互相排斥 → <b>立體張力</b>。","anti 中兩個甲基離最遠，是丁烷能量最低的構形。"]},
+  {t:"(c) 畫出丁烷能量最高的構形，並說明它比 anti 高多少。",pts:3,hint:"把後面的碳轉到兩個甲基互相重疊。",
+   ans:`${fig("q10Ans")}<p class="final">全重疊式（totally eclipsed，二面角 0°），比 anti 高約 19 kJ/mol。</p><p style="font-size:14px">為了看得清楚，後面的鍵畫得稍微偏開，實際上是完全重疊。</p>`,
+   steps:["把後碳旋轉到 CH<sub>3</sub> 正好在前碳 CH<sub>3</sub> 後面，二面角 0°。",
+          `能量來源可以拆開算：<div class="tbl"><table><tr><th>作用</th><th>每個約</th></tr><tr><td>CH<sub>3</sub>–CH<sub>3</sub> 重疊</td><td>11 kJ/mol</td></tr><tr><td>H–H 重疊（×2）</td><td>4 kJ/mol</td></tr><tr><td>合計</td><td>≈ 19 kJ/mol</td></tr></table></div>`,
+          "包含扭轉張力（鍵重疊）和立體張力（甲基太靠近）。"]}
+ ]},
+ {n:11,text:"預測下列反應的主要產物，並寫出反應機制（SN1、SN2、E1 或 E2）。",en:"Predict the major product and name the mechanism.",parts:[
+  {t:"(a)",pts:4,fig:"q11a",hint:"tert-butoxide 是強鹼，但體積很大。",
+   ans:`${figs([["cyhexene","cyclohexene"]])}<p class="final">環己烯（cyclohexene），E2</p>`,
+   steps:["受質：二級鹵烷。試劑：KOC(CH<sub>3</sub>)<sub>3</sub>，強鹼、位阻大、親核性差。加熱有利於消去。",
+          "強鹼 + 加熱 → <b>E2</b>：鹼拔 β-H，同時 Br 離開，一步形成雙鍵。",
+          "環己烷的 E2 有幾何要求：β-H 和 Br 必須<b>都在 axial、互為 anti-periplanar</b>，所以反應是在 Br 位於 axial 的椅式構形中發生。",
+          "這個分子的 β-H 都對稱，只會得到 cyclohexene 一種烯。"]},
+  {t:"(b)",pts:4,fig:"q11b",hint:"三級鹵烷遇到弱親核基／弱鹼（溶劑本身），而且有加熱。",
+   ans:`${figs([["mecyhexene","主要：1-methylcyclohexene"],["ether","次要：1-methoxy-1-methylcyclohexane"]])}<p class="final">主要產物 1-甲基環己烯（E1），次要產物為 SN1 的甲基醚。</p>`,
+   steps:["三級鹵烷在 CH<sub>3</sub>OH（質子性、弱親核、弱鹼）中：Br 先離開，生成<b>三級碳陽離子</b>（速率決定步驟）。",
+          "碳陽離子之後有兩條路：甲醇當親核基接上去 → SN1 醚；甲醇當鹼拔 β-H → E1 烯。",
+          "<b>加熱</b>有利於消去（消去反應 ΔS &gt; 0，溫度高時 −TΔS 項較大），所以 E1 為主。",
+          "依 <b>Zaitsev 規則</b>，生成取代基較多的環內雙鍵 1-methylcyclohexene，而不是環外的 methylenecyclohexane。"]}
+ ]}
+]}
+];
+
+/* ---------- render ---------- */
+const ICON={
+  hint:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5.5 11.5h5M6 14h4M8 2a4 4 0 0 0-2.4 7.2c.5.4.9 1 .9 1.6V11h3v-.2c0-.6.4-1.2.9-1.6A4 4 0 0 0 8 2z"/></svg>',
+  show:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8.5l3 3 7-7"/></svg>',
+  step:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h10M3 8h7M3 12h4"/></svg>'
+};
+const parts=[];
+const exam=document.getElementById("exam");
+PAGES.forEach(pg=>pg.qs.forEach(q=>q.parts.forEach((p,i)=>{p.id=`q${q.n}${"abcdef"[i]}`;p.q=q;parts.push(p)})));
+const byId=Object.fromEntries(parts.map(p=>[p.id,p]));
+const TOTAL=parts.reduce((s,p)=>s+p.pts,0);
+document.getElementById("total").textContent=TOTAL;
+
+let S={}; // id -> {txt, hint, show, step, grade}
+try{S=JSON.parse(localStorage.getItem("ochem-written-v1")||"{}")||{}}catch(e){S={}}
+const save=()=>{try{localStorage.setItem("ochem-written-v1",JSON.stringify(S))}catch(e){}};
+const st=id=>(S[id]||(S[id]={step:0}));
+
+function partHTML(p){
+  const multi=p.q.parts.length>1;
+  return `<div class="part" id="${p.id}">
+    ${p.fig?fig(p.fig):""}
+    ${p.t||!multi?`<div class="ptext">${p.t}${multi?`<span class="pts">${p.pts} 分</span>`:""}</div>`:""}
+    <textarea id="${p.id}-txt" placeholder="在這裡寫下你的答案…" aria-label="${p.q.n}${p.t} 作答區"></textarea>
+    <div class="actions">
+      <button type="button" class="btn hint" data-act="hint" data-id="${p.id}" aria-expanded="false">${ICON.hint}提示</button>
+      <button type="button" class="btn show" data-act="show" data-id="${p.id}" aria-expanded="false">${ICON.show}看答案</button>
+      <button type="button" class="btn step" data-act="step" data-id="${p.id}">${ICON.step}<span>逐步講解</span></button>
+    </div>
+    <div class="hintbox" id="${p.id}-hint" hidden>${p.hint}</div>
+    <div class="ans" id="${p.id}-ans" hidden><span class="tag">解答</span>${p.ans}</div>
+    <div class="ans" id="${p.id}-steps" hidden><span class="tag">講解</span><ol class="steps"></ol></div>
+    <div class="grade" id="${p.id}-grade" hidden><span class="q-label">對照解答，自己給分：</span>
+      <button type="button" class="g ok" data-act="grade" data-g="1" data-id="${p.id}" aria-pressed="false">答對 +${p.pts}</button>
+      <button type="button" class="g mid" data-act="grade" data-g="0.5" data-id="${p.id}" aria-pressed="false">部分正確 +${p.pts/2}</button>
+      <button type="button" class="g bad" data-act="grade" data-g="0" data-id="${p.id}" aria-pressed="false">答錯 0</button>
+    </div>
+  </div>`;
+}
+function render(){
+  exam.innerHTML=PAGES.map(pg=>`<section class="page"><div class="page-label"><span>${pg.label} · ${pg.topic}</span><span>${pg.qs.reduce((s,q)=>s+q.parts.reduce((a,p)=>a+p.pts,0),0)} 分</span></div>
+    <div class="sheet">${pg.qs.map(q=>`<article class="q" id="q${q.n}">
+      <div class="qhead"><span class="qnum">${q.n}.</span><span class="qtext">${q.text}${q.en?`<span class="en">${q.en}</span>`:""}</span><span class="pts">${q.parts.reduce((a,p)=>a+p.pts,0)} 分</span></div>
+      ${q.fig?fig(q.fig):""}${q.eq?`<div class="eq" style="text-align:center">${q.eq}</div>`:""}
+      ${q.parts.map(partHTML).join("")}
+    </article>`).join("")}</div></section>`).join("");
+  document.getElementById("chips").innerHTML=PAGES.flatMap(pg=>pg.qs).map(q=>`<a class="chip" id="chip${q.n}" href="#q${q.n}" aria-label="第 ${q.n} 題">${q.n}</a>`).join("");
+  parts.forEach(apply);
+}
+function apply(p){
+  const s=S[p.id]||{step:0};
+  const ta=document.getElementById(p.id+"-txt"); if(ta.value!==(s.txt||"")) ta.value=s.txt||"";
+  const hb=document.getElementById(p.id+"-hint"), hbtn=document.querySelector(`[data-act=hint][data-id=${p.id}]`);
+  hb.hidden=!s.hint; hbtn.setAttribute("aria-expanded",!!s.hint);
+  const ab=document.getElementById(p.id+"-ans"), abtn=document.querySelector(`[data-act=show][data-id=${p.id}]`);
+  ab.hidden=!s.show; abtn.setAttribute("aria-expanded",!!s.show); abtn.lastChild.textContent=s.show?"收起答案":"看答案";
+  const sb=document.getElementById(p.id+"-steps"), ol=sb.querySelector("ol"), sbtn=document.querySelector(`[data-act=step][data-id=${p.id}]`);
+  const n=s.step||0;
+  while(ol.children.length>n) ol.lastChild.remove();
+  for(let i=ol.children.length;i<n;i++){const li=document.createElement("li");li.innerHTML=`<div>${p.steps[i]}</div>`;ol.appendChild(li)}
+  sb.hidden=n===0;
+  sbtn.querySelector("span").textContent= n===0?`逐步講解（${p.steps.length} 步）`: n<p.steps.length?`下一步（${n}/${p.steps.length}）`:"講解完畢";
+  sbtn.disabled=n>=p.steps.length;
+  const gb=document.getElementById(p.id+"-grade"); gb.hidden=!(s.show||n>0);
+  gb.querySelectorAll(".g").forEach(b=>b.setAttribute("aria-pressed",String(s.grade!=null&&+b.dataset.g===s.grade)));
+}
+function tally(){
+  let score=0,done=0,ok=0,mid=0,bad=0;
+  parts.forEach(p=>{const g=S[p.id]?.grade; if(g!=null){done++;score+=p.pts*g; g===1?ok+=p.pts:g===0?bad+=p.pts:mid+=p.pts}});
+  document.getElementById("score").textContent=Number.isInteger(score)?score:score.toFixed(1);
+  document.getElementById("done").textContent=`已批改 ${done} / ${parts.length}`;
+  document.getElementById("mOk").style.width=ok/TOTAL*100+"%";
+  document.getElementById("mMid").style.width=mid/TOTAL*100+"%";
+  document.getElementById("mBad").style.width=bad/TOTAL*100+"%";
+  PAGES.flatMap(pg=>pg.qs).forEach(q=>{
+    const gs=q.parts.map(p=>S[p.id]?.grade), c=document.getElementById("chip"+q.n);
+    c.className="chip";
+    if(gs.every(g=>g!=null)){const all=gs.reduce((a,g)=>a+g,0)/gs.length;c.classList.add(all===1?"s-ok":all===0?"s-bad":"s-mid")}
+    else if(gs.some(g=>g!=null)||q.parts.some(p=>S[p.id]?.txt)) c.classList.add("s-part");
+  });
+  const sum=document.getElementById("summary");
+  if(done===parts.length){
+    const weak=parts.filter(p=>S[p.id].grade<1);
+    document.getElementById("sumText").textContent= weak.length?`自評總分 ${score} / ${TOTAL}。下面這些小題建議回去再看一次講解：`:`自評總分 ${score} / ${TOTAL}，全部答對！`;
+    document.getElementById("sumList").innerHTML=weak.map(p=>`<li><a href="#${p.id}">第 ${p.q.n} 題 ${p.t.replace(/<[^>]+>/g,"")}</a>（${p.q.text.replace(/<[^>]+>/g,"").slice(0,22)}…）</li>`).join("");
+    sum.hidden=false;
+  } else sum.hidden=true;
+}
+
+render(); tally();
+
+exam.addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]"); if(!b) return;
+  const p=byId[b.dataset.id], s=st(p.id), a=b.dataset.act;
+  if(a==="hint") s.hint=!s.hint;
+  if(a==="show") s.show=!s.show;
+  if(a==="step") s.step=Math.min((s.step||0)+1,p.steps.length);
+  if(a==="grade"){const g=+b.dataset.g; s.grade= s.grade===g?null:g; if(s.grade==null) delete s.grade;}
+  apply(p); tally(); save();
+});
+exam.addEventListener("input",e=>{
+  if(e.target.tagName!=="TEXTAREA") return;
+  const id=e.target.id.replace(/-txt$/,""); st(id).txt=e.target.value; save(); tally();
+});
+let expanded=false;
+document.getElementById("expandAll").addEventListener("click",e=>{
+  expanded=!expanded;
+  parts.forEach(p=>{const s=st(p.id); s.show=expanded; s.step=expanded?p.steps.length:0; apply(p)});
+  e.target.textContent=expanded?"收起全部答案":"展開全部答案"; save(); tally();
+});
+let armed=false;
+document.getElementById("reset").addEventListener("click",e=>{
+  if(!armed){armed=true;e.target.textContent="再按一次確認清除";setTimeout(()=>{armed=false;e.target.textContent="重新作答"},3000);return}
+  armed=false; e.target.textContent="重新作答"; S={}; save(); render(); tally(); window.scrollTo({top:0});
+});
+</script>
+</body>
+</html>
